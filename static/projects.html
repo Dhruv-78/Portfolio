@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>All Projects — Dhruv Dhupar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      #0a0a08;
+      --surface: #111110;
+      --border:  #252520;
+      --accent:  #c8f060;
+      --accent2: #f06040;
+      --text:    #e8e6df;
+      --muted:   #6b6a62;
+      --serif:   'Instrument Serif', Georgia, serif;
+      --mono:    'DM Mono', monospace;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: var(--mono); font-size: 14px;
+      line-height: 1.6; overflow-x: hidden; min-height: 100vh;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: .5;
+    }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 48px; border-bottom: 1px solid var(--border);
+      background: rgba(10,10,8,.85); backdrop-filter: blur(12px); z-index: 100;
+    }
+    .nav-logo { font-family: var(--serif); font-size: 22px; letter-spacing: -.02em; color: var(--text); text-decoration: none; }
+    .nav-back { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; transition: color .2s; }
+    .nav-back:hover { color: var(--accent); }
+    .nav-back-arrow { transition: transform .2s; }
+    .nav-back:hover .nav-back-arrow { transform: translateX(-4px); }
+
+    .page-header {
+      padding: 160px 48px 80px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 40px;
+    }
+    .section-label { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent2); margin-bottom: 16px; }
+    h1 { font-family: var(--serif); font-size: clamp(40px, 6vw, 80px); line-height: .95; letter-spacing: -.03em; }
+    h1 em { font-style: italic; color: var(--muted); }
+    .project-count { font-size: 12px; color: var(--muted); white-space: nowrap; padding-bottom: 8px; }
+    .project-count strong { color: var(--accent); font-weight: 400; }
+
+    .filter-bar {
+      padding: 24px 48px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .filter-label { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+    .filter-btn {
+      padding: 6px 14px; border: 1px solid var(--border); background: transparent;
+      color: var(--muted); font-family: var(--mono); font-size: 11px;
+      letter-spacing: .06em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: all .2s;
+    }
+    .filter-btn:hover { border-color: var(--text); color: var(--text); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+    #projects-container { padding: 0 48px 120px; }
+
+    /* 6 columns: # | project | tags | year | github | demo */
+    .table-head,
+    .project-row {
+      display: grid;
+      grid-template-columns: 52px 1fr 180px 80px 90px 140px;
+      gap: 16px;
+      align-items: start;
+    }
+    .table-head {
+      padding: 20px 0 12px; border-bottom: 1px solid var(--border);
+      font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
+    }
+    .project-row {
+      padding: 28px 0; border-bottom: 1px solid var(--border);
+      transition: background .2s; opacity: 0; animation: fadeRow .4s ease forwards;
+    }
+    @keyframes fadeRow { to { opacity: 1; } }
+    .project-row:hover { background: rgba(255,255,255,.015); }
+
+    .row-num { font-size: 11px; color: var(--muted); letter-spacing: .08em; padding-top: 4px; }
+    .row-title { font-family: var(--serif); font-size: 22px; letter-spacing: -.01em; line-height: 1.1; margin-bottom: 8px; }
+    .row-desc { font-size: 12px; color: var(--muted); line-height: 1.7; }
+    .row-tags { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 4px; }
+    .tag { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border: 1px solid var(--border); color: var(--muted); border-radius: 2px; }
+    .row-year { font-size: 12px; color: var(--muted); padding-top: 4px; }
+
+    .row-github, .row-demo { padding-top: 2px; }
+    .row-github a {
+      font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
+      color: var(--accent); text-decoration: none;
+      display: inline-flex; align-items: center; gap: 5px; transition: gap .2s;
+    }
+    .row-github a:hover { gap: 9px; }
+
+    /* ── Test / Demo button ── */
+    .demo-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--mono); font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
+      text-decoration: none; cursor: pointer;
+      padding: 6px 14px; border-radius: 2px;
+      border: 1px solid var(--accent2);
+      color: var(--bg); background: var(--accent2);
+      transition: background .2s, color .2s, gap .2s;
+    }
+    .demo-btn:hover { background: transparent; color: var(--accent2); gap: 10px; }
+    .no-demo { font-size: 11px; color: var(--border); letter-spacing: .06em; }
+
+    /* States */
+    .state-box { padding: 100px 0; text-align: center; color: var(--muted); }
+    .state-box .state-icon { font-size: 40px; margin-bottom: 20px; display: block; }
+    .state-box p { font-size: 13px; line-height: 1.9; }
+    .state-box span { color: var(--accent2); }
+
+    /* Skeleton */
+    .skel-row {
+      display: grid; grid-template-columns: 52px 1fr 180px 80px 90px 140px;
+      gap: 16px; padding: 28px 0; border-bottom: 1px solid var(--border); align-items: start;
+    }
+    .sk {
+      background: linear-gradient(90deg, var(--surface) 25%, var(--border) 50%, var(--surface) 75%);
+      background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 3px;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 32px 48px;
+      display: flex; justify-content: space-between; align-items: center;
+      color: var(--muted); font-size: 12px;
+    }
+
+    @media (max-width: 1050px) {
+      nav { padding: 16px 24px; }
+      .page-header { padding: 140px 24px 60px; flex-direction: column; align-items: flex-start; }
+      .filter-bar, #projects-container { padding-left: 24px; padding-right: 24px; }
+      .table-head { display: none; }
+      .project-row, .skel-row { grid-template-columns: 1fr; gap: 10px; }
+      .row-num { display: none; }
+      footer { padding: 24px; flex-direction: column; gap: 8px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">Dhruv Dhupar</a>
+  <a href="javascript:window.close()" class="nav-back">
+    <span class="nav-back-arrow">←</span><span>Back</span>
+  </a>
+</nav>
+
+<div class="page-header">
+  <div>
+    <p class="section-label">Complete Archive</p>
+    <h1>All <em>Projects.</em></h1>
+  </div>
+  <p class="project-count" id="count-label">Loading…</p>
+</div>
+
+<div class="filter-bar" id="filter-bar">
+  <span class="filter-label">Filter:</span>
+  <button class="filter-btn active" data-tag="all">All</button>
+</div>
+
+<div id="projects-container">
+  <div class="table-head">
+    <span>#</span><span>Project</span><span>Tags</span><span>Year</span><span>GitHub</span><span>Live Demo</span>
+  </div>
+  <div id="projects-list">
+    <div class="skel-row"><div class="sk" style="height:14px;width:30px"></div><div><div class="sk" style="height:22px;width:55%;margin-bottom:10px"></div><div class="sk" style="height:12px;width:90%;margin-bottom:6px"></div></div><div style="display:flex;gap:6px"><div class="sk" style="height:20px;width:55px"></div><div class="sk" style="height:20px;width:55px"></div></div><div class="sk" style="height:14px;width:40px"></div><div class="sk" style="height:14px;width:55px"></div><div class="sk" style="height:28px;width:105px"></div></div>
+    <div class="skel-row"><div class="sk" style="height:14px;width:30px"></div><div><div class="sk" style="height:22px;width:60%;margin-bottom:10px"></div><div class="sk" style="height:12px;width:80%;margin-bottom:6px"></div></div><div style="display:flex;gap:6px"><div class="sk" style="height:20px;width:55px"></div></div><div class="sk" style="height:14px;width:40px"></div><div class="sk" style="height:14px;width:55px"></div><div class="sk" style="height:28px;width:105px"></div></div>
+    <div class="skel-row"><div class="sk" style="height:14px;width:30px"></div><div><div class="sk" style="height:22px;width:45%;margin-bottom:10px"></div><div class="sk" style="height:12px;width:85%;margin-bottom:6px"></div></div><div style="display:flex;gap:6px"><div class="sk" style="height:20px;width:55px"></div><div class="sk" style="height:20px;width:55px"></div></div><div class="sk" style="height:14px;width:40px"></div><div class="sk" style="height:14px;width:55px"></div><div class="sk" style="height:28px;width:105px"></div></div>
+  </div>
+</div>
+
+<footer>
+  <span>© <span id="year"></span> Dhruv Dhupar</span>
+  <span>All Projects</span>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  let allProjects = [];
+  let activeTag = 'all';
+
+  function renderProjects(projects) {
+    const list = document.getElementById('projects-list');
+    if (!projects.length) {
+      list.innerHTML = `<div class="state-box"><span class="state-icon">◌</span><p>No projects match this filter.</p></div>`;
+      return;
+    }
+    list.innerHTML = projects.map((p, i) => {
+      const tags  = (p.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+      const github = p.url
+        ? `<a href="${p.url}" target="_blank" rel="noopener">Code ↗</a>`
+        : `<span style="color:var(--border)">—</span>`;
+      const demo = p.demo
+        ? `<a class="demo-btn" href="${p.demo}" target="_blank" rel="noopener">Test it ↗</a>`
+        : `<span class="no-demo">—</span>`;
+      return `
+        <div class="project-row" style="animation-delay:${i * 0.05}s">
+          <span class="row-num">${String(i + 1).padStart(2, '0')}</span>
+          <div>
+            <p class="row-title">${p.title || p.name || 'Untitled'}</p>
+            <p class="row-desc">${p.description || p.desc || ''}</p>
+          </div>
+          <div class="row-tags">${tags}</div>
+          <span class="row-year">${p.year || '—'}</span>
+          <div class="row-github">${github}</div>
+          <div class="row-demo">${demo}</div>
+        </div>`;
+    }).join('');
+  }
+
+  function buildFilters(projects) {
+    const bar = document.getElementById('filter-bar');
+    const tagSet = new Set();
+    projects.forEach(p => (p.tags || []).forEach(t => tagSet.add(t)));
+    tagSet.forEach(tag => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn';
+      btn.dataset.tag = tag;
+      btn.textContent = tag;
+      bar.appendChild(btn);
+    });
+    bar.addEventListener('click', e => {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      activeTag = btn.dataset.tag;
+      bar.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+      const filtered = activeTag === 'all'
+        ? allProjects
+        : allProjects.filter(p => (p.tags || []).includes(activeTag));
+      renderProjects(filtered);
+      updateCount(filtered.length);
+    });
+  }
+
+  function updateCount(n) {
+    document.getElementById('count-label').innerHTML =
+      `<strong>${n}</strong> project${n === 1 ? '' : 's'}`;
+  }
+
+  async function loadAllProjects() {
+    const list = document.getElementById('projects-list');
+    try {
+      const res = await fetch('/api/projects/all');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      allProjects = await res.json();
+      updateCount(allProjects.length);
+      buildFilters(allProjects);
+      renderProjects(allProjects);
+    } catch (err) {
+      list.innerHTML = `
+        <div class="state-box">
+          <span class="state-icon">◌</span>
+          <p><span>// Error</span> — Could not load projects.<br/>Is the server running?<br/>
+          <small style="margin-top:8px;display:block;font-size:11px">${err.message}</small></p>
+        </div>`;
+      document.getElementById('count-label').textContent = 'Error';
+    }
+  }
+
+  loadAllProjects();
+</script>
+</body>
+</html>

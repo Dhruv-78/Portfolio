@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0a0a08;
+      --surface:  #111110;
+      --border:   #252520;
+      --accent:   #c8f060;
+      --accent2:  #f06040;
+      --text:     #e8e6df;
+      --muted:    #6b6a62;
+      --serif:    'Instrument Serif', Georgia, serif;
+      --mono:     'DM Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Noise overlay ─────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: .5;
+    }
+
+    /* ── Nav ───────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 48px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,8,.85);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 22px;
+      letter-spacing: -.02em;
+      color: var(--text);
+    }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ── Socials ───────────────────────────────────────── */
+    .social-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      margin-top: 0;
+    }
+    .social-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 40px 36px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color .25s, background .25s, transform .2s;
+      position: relative;
+      overflow: hidden;
+      group: true;
+    }
+    .social-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: var(--accent);
+      opacity: 0;
+      transition: opacity .25s;
+    }
+    .social-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .social-card:hover::after { opacity: .04; }
+    .social-card:nth-child(2):hover { border-color: #e1306c; }
+    .social-card:nth-child(2):hover::after { background: #e1306c; opacity: .04; }
+
+    .social-info { position: relative; z-index: 1; }
+    .social-platform {
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .social-name {
+      font-family: var(--serif);
+      font-size: 28px;
+      letter-spacing: -.01em;
+    }
+    .social-handle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .social-arrow {
+      font-size: 28px;
+      color: var(--border);
+      transition: color .25s, transform .25s;
+      position: relative; z-index: 1;
+      line-height: 1;
+    }
+    .social-card:hover .social-arrow {
+      color: var(--accent);
+      transform: translate(4px, -4px);
+    }
+    .social-card:nth-child(2):hover .social-arrow { color: #e1306c; }
+
+    /* ── Hero ──────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 48px 72px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: .4;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 100%, black 40%, transparent 100%);
+    }
+    .hero-tag {
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(52px, 9vw, 120px);
+      line-height: .95;
+      letter-spacing: -.03em;
+      color: var(--text);
+      max-width: 900px;
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--muted);
+    }
+    .hero-sub {
+      margin-top: 36px;
+      max-width: 400px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+    .hero-cta {
+      margin-top: 48px;
+      display: flex; gap: 16px; align-items: center;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 28px;
+      border-radius: 2px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+      border: 1px solid var(--accent);
+    }
+    .btn-primary:hover {
+      background: transparent;
+      color: var(--accent);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover {
+      border-color: var(--muted);
+      color: var(--text);
+    }
+
+    /* ── Section shared ────────────────────────────────── */
+    section { padding: 120px 48px; }
+    .section-label {
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 16px;
+    }
+    h2 {
+      font-family: var(--serif);
+      font-size: clamp(32px, 5vw, 56px);
+      line-height: 1.05;
+      letter-spacing: -.02em;
+      margin-bottom: 60px;
+    }
+
+    /* ── Projects ──────────────────────────────────────── */
+    #projects { border-top: 1px solid var(--border); }
+    #projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2px;
+    }
+    .project-card {
+      background: var(--surface);
+      padding: 36px;
+      border: 1px solid var(--border);
+      transition: border-color .2s, transform .2s;
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 3px; height: 0;
+      background: var(--accent);
+      transition: height .3s ease;
+    }
+    .project-card:hover::before { height: 100%; }
+    .project-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .card-number {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: .1em;
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-family: var(--serif);
+      font-size: 24px;
+      letter-spacing: -.01em;
+      margin-bottom: 12px;
+    }
+    .card-desc {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+    .card-tags {
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .tag {
+      font-size: 10px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 2px;
+    }
+    .project-link {
+      display: inline-block;
+      margin-top: 20px;
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .project-link:hover { text-decoration: underline; }
+
+    /* skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface) 25%, var(--border) 50%, var(--surface) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 3px;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+    .skel-title { height: 24px; width: 60%; margin-bottom: 12px; }
+    .skel-line  { height: 14px; width: 100%; margin-bottom: 8px; }
+    .skel-line.short { width: 70%; }
+    .skel-tag   { height: 20px; width: 60px; display: inline-block; margin-right: 8px; }
+
+    /* error state */
+    .error-state {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--muted);
+    }
+    .error-state span { color: var(--accent2); }
+
+    /* ── View All ──────────────────────────────────────── */
+    .view-all-wrap {
+      margin-top: 48px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .view-all-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 32px;
+      border: 1px solid var(--border);
+      color: var(--text);
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      transition: border-color .2s, color .2s, gap .2s;
+    }
+    .view-all-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      gap: 20px;
+    }
+    .view-all-arrow { font-size: 16px; transition: transform .2s; }
+    .view-all-btn:hover .view-all-arrow { transform: translate(3px, -3px); }
+
+    /* ── Connect ──────────────────────────────────────── */
+    #connect { border-top: 1px solid var(--border); }
+
+    /* ── Footer ────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* ── Animations ────────────────────────────────────── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: fadeUp .7s ease forwards;
+    }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .delay-1 { animation-delay: .1s; }
+    .delay-2 { animation-delay: .2s; }
+    .delay-3 { animation-delay: .3s; }
+    .delay-4 { animation-delay: .45s; }
+
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      #hero, section { padding-left: 24px; padding-right: 24px; }
+      .social-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 12px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav>
+  <span class="nav-logo">Portfolio</span>
+  <div class="nav-links">
+    <a href="#projects">Work</a>
+    <a href="#connect">Connect</a>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <p class="hero-tag fade-up">Available for work</p>
+  <h1 class="fade-up delay-1">Building things <em>that matter.</em></h1>
+  <p class="hero-sub fade-up delay-2">
+    A developer focused on clean architecture, thoughtful interfaces,
+    and software that solves real problems.
+  </p>
+  <div class="hero-cta fade-up delay-3">
+    <a href="#projects" class="btn btn-primary">View Projects</a>
+    <a href="#connect" class="btn btn-ghost">Get in Touch</a>
+  </div>
+</section>
+
+<!-- ── Projects ── -->
+<section id="projects">
+  <p class="section-label">Selected Work</p>
+  <h2>Recent Projects</h2>
+  <div id="projects-grid">
+    <!-- skeleton cards while loading -->
+    <div class="project-card" id="sk1">
+      <div class="card-number skeleton" style="height:12px;width:40px;margin-bottom:20px"></div>
+      <div class="skeleton skel-title"></div>
+      <div class="skeleton skel-line"></div>
+      <div class="skeleton skel-line short"></div>
+      <div style="margin-top:24px">
+        <span class="skeleton skel-tag"></span>
+        <span class="skeleton skel-tag"></span>
+      </div>
+    </div>
+    <div class="project-card" id="sk2">
+      <div class="card-number skeleton" style="height:12px;width:40px;margin-bottom:20px"></div>
+      <div class="skeleton skel-title"></div>
+      <div class="skeleton skel-line"></div>
+      <div class="skeleton skel-line short"></div>
+      <div style="margin-top:24px">
+        <span class="skeleton skel-tag"></span>
+        <span class="skeleton skel-tag"></span>
+      </div>
+    </div>
+    <div class="project-card" id="sk3">
+      <div class="card-number skeleton" style="height:12px;width:40px;margin-bottom:20px"></div>
+      <div class="skeleton skel-title"></div>
+      <div class="skeleton skel-line"></div>
+      <div class="skeleton skel-line short"></div>
+      <div style="margin-top:24px">
+        <span class="skeleton skel-tag"></span>
+        <span class="skeleton skel-tag"></span>
+      </div>
+    </div>
+  </div>
+  <div class="view-all-wrap">
+    <a href="/projects.html" target="_blank" rel="noopener" class="view-all-btn">
+      <span>View All Projects</span>
+      <span class="view-all-arrow">↗</span>
+    </a>
+  </div>
+</section>
+
+<!-- ── Connect ── -->
+<section id="connect">
+  <p class="section-label">Find Me Online</p>
+  <h2>Let's connect.</h2>
+  <div class="social-grid">
+    <a class="social-card fade-up" href="https://www.linkedin.com/in/dhruv-dhupar" target="_blank" rel="noopener">
+      <div class="social-info">
+        <p class="social-platform">LinkedIn</p>
+        <p class="social-name">Dhruv Dhupar</p>
+        <p class="social-handle">linkedin.com/in/dhruv-dhupar</p>
+      </div>
+      <span class="social-arrow">↗</span>
+    </a>
+    <a class="social-card fade-up delay-1" href="https://www.instagram.com/dhruv.dhupar" target="_blank" rel="noopener">
+      <div class="social-info">
+        <p class="social-platform">Instagram</p>
+        <p class="social-name">dhruv.dhupar</p>
+        <p class="social-handle">instagram.com/dhruv.dhupar</p>
+      </div>
+      <span class="social-arrow">↗</span>
+    </a>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <span>© <span id="year"></span> Portfolio</span>
+  <span>Built with Go &amp; vanilla JS</span>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* ── Fetch Projects ── */
+  async function loadProjects() {
+    const grid = document.getElementById('projects-grid');
+    try {
+      const res = await fetch('/api/projects');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const projects = await res.json();
+
+      grid.innerHTML = '';
+      if (!projects || projects.length === 0) {
+        grid.innerHTML = `<div class="error-state"><span>//</span> No projects found.</div>`;
+        return;
+      }
+
+      projects.forEach((p, i) => {
+        const tags = (p.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+        const link = p.url ? `<a class="project-link" href="${p.url}" target="_blank" rel="noopener">View Project →</a>` : '';
+        const card = document.createElement('div');
+        card.className = 'project-card fade-up';
+        card.style.animationDelay = `${i * 0.08}s`;
+        card.innerHTML = `
+          <p class="card-number">${String(i + 1).padStart(2, '0')}</p>
+          <h3 class="card-title">${p.title || p.name || 'Untitled'}</h3>
+          <p class="card-desc">${p.description || p.desc || ''}</p>
+          <div class="card-tags">${tags}</div>
+          ${link}
+        `;
+        grid.appendChild(card);
+      });
+    } catch (err) {
+      grid.innerHTML = `
+        <div class="error-state">
+          <span>// Error</span><br/>
+          Could not load projects — is the server running?<br/>
+          <small style="margin-top:8px;display:block">${err.message}</small>
+        </div>`;
+    }
+  }
+
+  loadProjects();
+
+</script>
+</body>
+</html>
+
