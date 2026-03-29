@@ -53,7 +53,7 @@ var AllProjects = []Project{
     URL:         "https://github.com/Dhruv-78/SMS-Spam-Ham-Prediction.git",
   },
   {
-    Title:       "CardioScan-AI",
+    Title:       "CardioScan",
     Description: "A healthcare diagnostic model that evaluates patient clinical metrics to provide high-accuracy risk assessments for heart disease.",
     Tags:        []string{"Healthcare AI", "Predictive Modeling", "Data Science", "Medical Tech"},
     Year:        "2025",
@@ -67,7 +67,7 @@ var AllProjects = []Project{
     URL:         "https://github.com/Dhruv-78/life_expectancy_prediction.git",
   },
   {
-    Title:       "InsuRate-ML",
+    Title:       "InsuRate",
     Description: "An insurance tech regression engine developed to estimate individual medical costs based on historical risk factors and demographics.",
     Tags:        []string{"InsurTech", "Regression", "Machine Learning", "Fintech"},
     Year:        "2025",
